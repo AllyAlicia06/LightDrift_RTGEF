@@ -12,6 +12,8 @@ public class PlayerBallThrower : MonoBehaviour
     [Header("Throw Settings")]
     [SerializeField] private float maxAimDistance = 20f;
     [SerializeField] private RectTransform crosshairTransform; 
+    
+    [SerializeField] private float enemyOvershootDistance = 2.5f;
 
     private MagicBall activeBall;
     
@@ -95,6 +97,11 @@ public class PlayerBallThrower : MonoBehaviour
             {
                 nearestDistance = hit.distance;
                 aimPoint = hit.point;
+                
+                if (hit.collider.GetComponentInParent<EnemyHealth>() != null)
+                {
+                    aimPoint += ray.direction * enemyOvershootDistance;
+                }
             }
         }
         
