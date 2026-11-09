@@ -98,6 +98,8 @@ public class MagicBall : MonoBehaviour
         {
             if (TryHitEnemy(hit.collider, direction))
                 return true;
+            
+            TryLightTorch(hit.collider);
         }
         
         Collider[] overlaps = Physics.OverlapSphere(to, hitRadius, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
@@ -106,6 +108,8 @@ public class MagicBall : MonoBehaviour
         {
             if (TryHitEnemy(collider, direction))
                 return true;
+            
+            TryLightTorch(collider);
         }
 
         return false;
@@ -133,5 +137,13 @@ public class MagicBall : MonoBehaviour
         }
 
         return false;
+    }
+    
+    private void TryLightTorch(Collider collider)
+    {
+        RestorationTorch torch = collider.GetComponentInParent<RestorationTorch>();
+        
+        if (torch != null)
+            torch.TryLight();
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,10 +13,12 @@ public class PlayerBallThrower : MonoBehaviour
     [Header("Throw Settings")]
     [SerializeField] private float maxAimDistance = 20f;
     [SerializeField] private RectTransform crosshairTransform; 
-    
     [SerializeField] private float enemyOvershootDistance = 2.5f;
+    [SerializeField, Min(0f)] private float throwCooldown = 0.6f;
+    [SerializeField, Min(1)] private int maxActiveBalls = 3;
 
-    private MagicBall activeBall;
+    private readonly List<MagicBall> activeBalls = new();
+    private float nextThrowTime;
     
     private void Awake()
     {
@@ -59,7 +62,12 @@ public class PlayerBallThrower : MonoBehaviour
     
     private void ThrowBall()
     {
-        if (activeBall != null)
+        activeBalls.RemoveAll(ball => ball == null);
+        
+        if (Time.time < nextThrowTime)
+            return;
+        
+        if (activeBalls.Count >= maxActiveBalls)
             return;
         
         if (aimCamera == null || ballSpawnPoint == null || ballPrefab == null)
@@ -70,8 +78,11 @@ public class PlayerBallThrower : MonoBehaviour
         
         Vector3 targetPoint = GetAimPoint();
         
-        activeBall = Instantiate(ballPrefab, ballSpawnPoint.position, Quaternion.identity);
-        activeBall.Launch(targetPoint, ballSpawnPoint);
+        MagicBall newBall = Instantiate(ballPrefab, ballSpawnPoint.position, Quaternion.identity);
+        
+        activeBalls.Add(newBall);
+        newBall.Launch(targetPoint, ballSpawnPoint);
+        nextThrowTime = Time.time + throwCooldown;
     }
     
     private Vector3 GetAimPoint()

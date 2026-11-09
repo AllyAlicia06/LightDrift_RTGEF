@@ -10,6 +10,9 @@ public class PlayerHealth : MonoBehaviour
     [Header("UI")]
     [SerializeField] private Slider healthBar;
     
+    [Header("References")]
+    [SerializeField] private GameUIManager gameUIManager;
+    
     private int currentHealth;
     private float nextAllowedDamageTime;
     
@@ -54,14 +57,10 @@ public class PlayerHealth : MonoBehaviour
         
         Debug.Log("Player defeated!");
         
-        if (TryGetComponent(out PlayerMovement movement))
-            movement.enabled = false;
-        
-        if (TryGetComponent(out PlayerBallThrower ballThrower))
-            ballThrower.enabled = false;
-        
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        if (gameUIManager != null)
+            gameUIManager.ShowDeath();
+        else
+            Debug.LogError("PlayerHealth: GameUIManager is not assigned!");
     }
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
