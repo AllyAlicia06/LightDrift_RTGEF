@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
@@ -28,6 +29,10 @@ public class PlayerMovement : MonoBehaviour
     [Header("Gravity Settings")]
     [SerializeField] private float gravity = -20f;
     [SerializeField] private float groundedVelocity = -2f;
+    
+    public event Action Jumped;
+    public event Action Landed;
+    public event Action Dashed;
     
     private CharacterController controller;
     private float verticalVelocity;
@@ -162,6 +167,7 @@ public class PlayerMovement : MonoBehaviour
             );
             
             jumpsRemaining--;
+            Jumped?.Invoke(); 
         }
 
         HandleDash(moveDirection, wasGrounded);
@@ -184,6 +190,9 @@ public class PlayerMovement : MonoBehaviour
         velocity.y = verticalVelocity;
 
         CollisionFlags collisions = controller.Move(velocity * Time.deltaTime);
+        
+        if (!wasGrounded && (collisions & CollisionFlags.Below) != 0)
+            Landed?.Invoke();
         
         if ((collisions & CollisionFlags.Above) != 0 && verticalVelocity > 0f)
         {
@@ -243,5 +252,7 @@ public class PlayerMovement : MonoBehaviour
         {
             airDashUsed = true;
         }
+        
+        Dashed?.Invoke();
     }
 }

@@ -16,6 +16,9 @@ public class PlayerHealth : MonoBehaviour
     private int currentHealth;
     private float nextAllowedDamageTime;
     
+    public event System.Action Damaged;
+    public event System.Action Died; 
+    
     public bool IsDead { get; private set; }
     
     private void Awake()
@@ -38,6 +41,8 @@ public class PlayerHealth : MonoBehaviour
         
         if (currentHealth <= 0)
             Die();
+        else
+            Damaged?.Invoke();
     }
     
     private void UpdateHealthBar()
@@ -54,6 +59,7 @@ public class PlayerHealth : MonoBehaviour
     private void Die()
     {
         IsDead = true;
+        Died?.Invoke();
         
         Debug.Log("Player defeated!");
         

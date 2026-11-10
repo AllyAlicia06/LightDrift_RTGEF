@@ -20,6 +20,8 @@ public class PlayerBallThrower : MonoBehaviour
     private readonly List<MagicBall> activeBalls = new();
     private float nextThrowTime;
     
+    public event System.Action BallThrown; 
+    
     private void Awake()
     {
         if (aimCamera == null)
@@ -83,6 +85,8 @@ public class PlayerBallThrower : MonoBehaviour
         activeBalls.Add(newBall);
         newBall.Launch(targetPoint, ballSpawnPoint);
         nextThrowTime = Time.time + throwCooldown;
+        
+        BallThrown?.Invoke(); 
     }
     
     private Vector3 GetAimPoint()
